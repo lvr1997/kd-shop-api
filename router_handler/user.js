@@ -14,10 +14,6 @@ const config = require('../config')
 //注册
 exports.regUser = (req, resp) => {
     let roleId = 1
-    if (req.body.token) {
-        //存在token说明是管理员在添加后台系统用户
-        roleId = 2
-    }
     //接收参数
     const userInfo = req.body
     //根据手机号查找用户,判断用户是否被占用

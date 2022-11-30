@@ -4,5 +4,5 @@
 
 module.exports = {
     jwtSecretKey: 'kd-shop$%^',
-    expiresIn: '30m'
+    expiresIn: '10h'
 }

@@ -13,6 +13,7 @@ const expressJWT = require('express-jwt')
 const homeRouter = require('./router/home');
 const userRouter = require('./router/user');
 const userInfoRouter = require('./router/userinfo')
+const goodsRouter = require('./router/goods')
 
 const app = express()
 
@@ -49,6 +50,7 @@ app.use(expressJWT({ secret: config.jwtSecretKey }).unless({ path: [/^\/user\//,
  app.use('/home', homeRouter);
  app.use('/user', userRouter);
  app.use('/my', userInfoRouter);
+ app.use('/goods', goodsRouter);
 
 
  /**
