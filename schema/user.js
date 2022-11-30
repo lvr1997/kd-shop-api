@@ -10,18 +10,27 @@ const joi = require('joi')
  */
 
 // 用户名的验证规则
-const username = joi.string().alphanum().min(1).max(10).required()
+const username = joi.string().min(1).max(10).required().error(new Error('请输入合法的用户名，且在10个字符以内'))
 //手机号校验
 const phone = joi.string().pattern(/^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$/).required().error(new Error('请输入正确的手机号！'))
 // const userEmail = joi.string().required().pattern(/^([a-zA-Z]|[0-9])(\w|\-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/).error(new Error("邮箱格式有误！"));
 // 密码的验证规则
 const password = joi
   .string()
+  .alphanum()
   .pattern(/^[\S]{6,12}$/)
   .required()
-  .error(new Error("密码必须为6-12位字符！"))
+  .error(new Error("密码必须为数字和字母的组合且在6-12位字符！"))
 
-const verifyCode = joi.string().min(1).max(4).required()
+  //验证码
+const verifyCode = joi.string().min(1).max(4).required().error(new Error("请输入正确的验证码"))
+
+//个性签名
+const residence = joi.string().min(15).max(200).error(new Error("个性签名至少15个字符"))
+
+const birthday = joi.string();
+
+const sex = joi.string().max(1)
 
 // 注册和登录表单的验证规则对象
 exports.reg_login_schema = {
@@ -30,5 +39,25 @@ exports.reg_login_schema = {
     phone,
     password,
     verifyCode
+  },
+}
+
+exports.update_userinfo_schema = {
+  body: {
+    username, residence,birthday,sex
+  }
+}
+
+// 验证规则对象 - 重置密码
+exports.update_password_schema = {
+  body: {
+    // 使用 password 这个规则，验证 req.body.oldPwd 的值
+    oldPwd: password,
+    // 使用 joi.not(joi.ref('oldPwd')).concat(password) 规则，验证 req.body.newPwd 的值
+    // 解读：
+    // 1. joi.ref('oldPwd') 表示 newPwd 的值必须和 oldPwd 的值保持一致
+    // 2. joi.not(joi.ref('oldPwd')) 表示 newPwd 的值不能等于 oldPwd 的值
+    // 3. .concat() 用于合并 joi.not(joi.ref('oldPwd')) 和 password 这两条验证规则
+    newPwd: joi.not(joi.ref('oldPwd')).concat(password),
   },
 }
