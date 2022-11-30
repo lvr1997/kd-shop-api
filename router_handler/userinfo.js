@@ -75,3 +75,18 @@ exports.updatePwd = (req, res) => {
 
     })
 }
+
+//更新头像
+exports.uploadAvatar = (req, res) => {
+    const sql = 'update user set img_url=? where user_id=?'
+    db.query(sql, [req.body.avatar, req.user.userId], (err, results) => {
+        // 执行 SQL 语句失败
+        if (err) return res.cc(err)
+
+        // 执行 SQL 语句成功，但是影响行数不等于 1
+        if (results.affectedRows !== 1) return res.cc('更新头像失败！')
+
+        // 更新用户头像成功
+        return res.cc('更新头像成功！', 0)
+    })
+}
