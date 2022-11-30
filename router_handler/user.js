@@ -1,7 +1,15 @@
+//数据库模块
 const db = require('../db/index')
+//密码加密
 const { getPassword } = require('../utils/md5Util')
-const { getDate19, phone } = require('../utils/tools')
+//工具类 获取系统时间、手机号隐藏中间4位
+const { getDate19, getPhone } = require('../utils/tools')
+//生成uuid
 const uuid = require('node-uuid');
+//生成jwt token
+const jwt = require('jsonwebtoken')
+//导入全局配置
+const config = require('../config')
 
 //注册
 exports.regUser = (req, resp) => {
@@ -25,7 +33,7 @@ exports.regUser = (req, resp) => {
         } else {
             //对密码进行加密
             userInfo.password = getPassword(userInfo.password)
-            let usernn = phone(userInfo.phone)
+            let usernn = getPhone(userInfo.phone)
             //执行插入数据库操作
             const sql2 = `INSERT INTO user (user_id,phone,username,password,create_at,user_role,user_school) values ("${uuid()}","${userInfo.phone}","${usernn}","${userInfo.password}","${getDate19()}",${roleId},"${userInfo.userSchool}")`
             db.query(sql2, (err, result) => {
@@ -45,7 +53,30 @@ exports.regUser = (req, resp) => {
 exports.login = (req, resp) => {
     //接收参数
     let { phone, password, verifyCode } = req.body;
+    //先验证验证码
+    if(verifyCode.toLowerCase() !== req.cookies.captcha) {
+        return resp.cc("验证码输入错误")
+    }
     //sql
-    let sql = 'SELECT user_id as userId, username, user_email as userEmail, birthday, sex, img_url as imgUrl, residence, user_role as userRole, user_school as userSchool FROM user WHERE phone=? AND status=1'
+    let sql = 'SELECT user_id as userId, username, phone, password, birthday, sex, img_url as imgUrl, residence, user_role as userRole, user_school as userSchool FROM user WHERE phone=? AND status=1'
+    db.query(sql, phone, function (err, rows) {
+        // 执行 SQL 语句失败
+        if (err) return resp.cc(err)
+        // 执行 SQL 语句成功，但是查询到数据条数不等于 1
+        if (rows.length !== 1) return resp.cc('用户不存在，登录失败！')
+        // 判断用户输入的登录密码是否和数据库中的密码一致
+        let compareResult = getPassword(password) == rows[0].password
+        if(!compareResult) {
+            return resp.cc('密码错误，登录失败！')
+        }
+        //生成JWT的token字符串
+        const user = { ...rows[0], password: '', imgUrl: '', phone: getPhone(rows[0].phone) }
+        const tokenStr = jwt.sign(user, config.jwtSecretKey, {expiresIn: config.expiresIn})
+        resp.send({
+            status: 0,
+            message: "登录成功！",
+            token: 'Bearer ' + tokenStr, // 为了方便客户端使用 Token，在服务器端直接拼接上 Bearer 的前缀
+        })
+    })
     
 }

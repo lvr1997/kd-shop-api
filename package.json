@@ -5,9 +5,12 @@
   "main": "app.js",
   "dependencies": {
     "@escook/express-joi": "^1.1.1",
+    "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "express": "^4.17.1",
+    "express-jwt": "^5.3.3",
     "joi": "^17.7.0",
+    "jsonwebtoken": "^8.5.1",
     "mysql": "^2.18.1",
     "node-uuid": "^1.4.8",
     "svg-captcha": "^1.4.0"

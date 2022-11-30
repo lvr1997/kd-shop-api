@@ -13,7 +13,4 @@ router.post('/login', expressJoi(reg_login_schema), userHandler.login);
 //注册
 router.post('/register', expressJoi(reg_login_schema), userHandler.regUser)
 
-// 上传头像
-// router.post('/avatarUpload', userHandler.uploadAvatar)
-
 module.exports = router;

@@ -152,7 +152,7 @@ let error=(resp,msg)=>{
     resp.send(msg);
 }
 
-let phone = (phone) => {
+let getPhone = (phone) => {
    return phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2');
 }
 
@@ -167,5 +167,5 @@ module.exports = {
     formatPageSize,
     getYestoday,
     error,
-    phone
+    getPhone
 }
