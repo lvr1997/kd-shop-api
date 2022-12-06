@@ -1,35 +1,36 @@
 // 导入定义验证规则的模块
 const joi = require('joi')
 
-// 定义 分类名称 和 分类别名 的校验规则
-const name = joi.string().required()
-const alias = joi.string().alphanum().required()
+//定义验证规则
+//闲置名称
+const name = joi.string().min(2).max(20).required().error(new Error("请输入闲置物品名称，长度在2~20个字符"))
+//分类id 用户界面下拉框选择
+const cate_id = joi.number().integer().min(1).required()
+//物品描述
+const describle = joi.string().required().allow('')
+//出售价格
+const price = joi.number().integer().min(1).required().error(new Error("请输入正确的物品价格！"))
+//原价格
+const real_price = joi.number().integer().min(1).required().error(new Error("请输入正确的物品价格！"))
+const good_address = joi.string().min(5).max(50).required().error(new Error("请输入交易地址，长度在5~50个字符"))
+const view_count = joi.number().integer().min(1).required().error(new Error("请选择正确的数量！"))
 
-// 定义 分类Id 的校验规则
 const id = joi.number().integer().min(1).required()
 
-// 校验规则对象 - 添加分类
-exports.add_cate_schema = {
-  body: {
-    name,
-    alias,
-  },
+exports.add_goods_schema = {
+    body: {
+        name,
+        cate_id,
+        describle,
+        price,
+        real_price,
+        good_address,
+        view_count
+    },
 }
 
-// 校验规则对象 - 删除分类
-exports.delete_cate_schema = {
-  params: {
-    id,
-  },
-}
-
-//校验规则对象 --- 修改分类
-exports.update_cate_schema = {
-  params: {
-    id
-  },
-  body: {
-    name,
-    alias,
-  }
+exports.detail_goods_schema = {
+    params: {
+        id
+    },
 }
